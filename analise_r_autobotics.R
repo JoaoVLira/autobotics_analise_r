@@ -1,0 +1,74 @@
+library(ggplot2)
+
+df <- dados_hardware
+
+#Visão macro do data frame
+summary(df)
+
+#A média de uso de CPU é de 11%
+median(df$cpu)
+
+#O máximo de uso de CPU atingido foi de 100%
+max(df$cpu)
+
+#Distribuição de Uso de CPU em Porcentagem
+ggplot(df, aes(x = "", y = cpu)) +
+  geom_boxplot(fill = "yellow") +
+  labs(title = "Distribuição do Uso de CPU (%)", y = "CPU (%)") +
+  theme_minimal()
+
+#Analisando esse gráfico, fica notável a concentração das capturas por volta de 15%, porém
+#também é presente várias outliers, que mostram que o uso de CPU passa por "picos" e necessita ser monitorado para
+#identificar se pode futuramente apresentar problemas por estar com uso alto (sobrecarga, impactar
+#desempenho dos controladores)
+
+#A média de uso de RAM é de 75.4%
+median(df$ramUsada)
+
+#O máximo de uso de RAM atingido foi de 100%
+max(df$ramUsada)
+
+#Distribuição de Uso de RAM em Porcentagem
+ggplot(df, aes(x = "", y = ramUsada)) +
+  geom_boxplot(fill = "orange") +
+  labs(title = "Distribuição do Uso de RAM (%)", y = "RAM (%)")
+
+#A Memória RAM tem uma média de uso naturalmente alta, e a longo prazo pode ser
+# um problema, por isso devemos verificar os picos da própria através de alertas.
+
+#fazer os alertas de CPU e de RAM
+# alerta de cpu nivel medio, 60% a 85%
+# alerta de cpu nivel critico, acima de 85%
+df$alerta_cpu <- ifelse(df$cpu > 85, "crítico",
+                              ifelse(df$cpu >= 60, "médio", "estável"))
+
+
+#alerta de ram nivel medio, 75 a 90%
+#alerta de ram nivel critico, acima de 90%
+df$alerta_ram <- ifelse(df$ramUsada > 90, "crítico",
+                              ifelse(df$ramUsada >= 75, "médio", "estável"))
+
+barplot(
+  rbind(
+    table(df$alerta_cpu),
+    table(df$alerta_ram)
+  ),
+  beside = TRUE,
+  col = c("yellow", "orange"),          # Aqui você define as cores para CPU e RAM
+  legend.text = c("CPU", "RAM"),
+  main = "Alertas por Tipo",
+  xlab = "Nível de Alerta",
+  ylab = "Quantidade"
+)
+
+
+#A maioria dos alertas são de níveis estável, com cpu ultrapassando 1000 e ram próximo de 600
+
+#Em nível médio a RAM se destaca diante da cpu, visto que seu uso é normalmente maior, por volta
+#de 600 alertas desse nível. Já a cpu, possio por volta de 20 alertas desse nível, reforçando a ideia
+#que o componente passar por problemas de picos de uso
+
+#No caso de nível crítico, a cpu comprova mais "picos" enquanto a ram possui uma maior "constância" 
+#pelo fato de ter uma média de uso naturalmente mais alta (como dito anteriormente), 
+#sendo assim a cpu possui cerca de 35 alertas e ram por volta de 80.
+
