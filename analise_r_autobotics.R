@@ -5,7 +5,7 @@ df <- dados_hardware
 #Visão macro do data frame
 summary(df)
 
-#A média de uso de CPU é de 11%
+#A mediana de uso de CPU é de 11%
 median(df$cpu)
 
 #O máximo de uso de CPU atingido foi de 100%
@@ -22,7 +22,7 @@ ggplot(df, aes(x = "", y = cpu)) +
 #identificar se pode futuramente apresentar problemas por estar com uso alto (sobrecarga, impactar
 #desempenho dos controladores)
 
-#A média de uso de RAM é de 75.4%
+#A mediana de uso de RAM é de 75.4%
 median(df$ramUsada)
 
 #O máximo de uso de RAM atingido foi de 100%
@@ -54,7 +54,7 @@ barplot(
     table(df$alerta_ram)
   ),
   beside = TRUE,
-  col = c("yellow", "orange"),          # Aqui você define as cores para CPU e RAM
+  col = c("yellow", "orange"),    
   legend.text = c("CPU", "RAM"),
   main = "Alertas por Tipo",
   xlab = "Nível de Alerta",
